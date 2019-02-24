@@ -1,33 +1,43 @@
-from django.shortcuts import render, redirect
-from django.views import generic
+from django.shortcuts import render, redirect, get_object_or_404
+
 from django.utils import timezone
 
-from .models import Blogs
+from .models import Post
 from .forms import PostForm
 
 
-class BlogsView(generic.ListView):
-    template_name = 'weblog/index.html'
-    context_object_name = 'title_list'
-
-    def get_queryset(self):
-        return Blogs.objects.all()
+def home(request):
+    posts = Post.objects.filter(pub_date__lte=timezone.now()).order_by('pub_date')
+    return render(request, 'weblog/home.html', {'posts': posts})
 
 
-class PostsView(generic.DetailView):
-    model = Blogs
-    template_name = 'weblog/detail.html'
+def detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    return render(request, 'weblog/detail.html', {'post': post})
 
 
 def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.published_date = timezone.now()
+            post = form.save()
+            post.pub_date = timezone.now()
             post.save()
-            return redirect('post_detail', pk=post.pk)
+            return redirect('detail', pk=post.pk)
     else:
         form = PostForm()
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, 'weblog/post_edit.html', {'form': form})
+
+
+def post_edit(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            post = form.save()
+            post.pub_date = timezone.now()
+            post.save()
+            return redirect('detail', pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'weblog/post_edit.html', {'form': form})

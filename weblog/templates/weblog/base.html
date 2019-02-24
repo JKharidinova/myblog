@@ -1,24 +1,29 @@
 {% load static %}
 <html>
-    <head>
-        <title>Blog</title>
+<head>
+    <title>Blog</title>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <link href="//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
         <link rel="stylesheet" type="text/css" href="{% static 'weblog/blog.css' %}">
-</head>
 
+</head>
 <body>
-    <div>
-        <h1>Blog</h1>
+<div class="page-header">
+    <a href="{% url 'weblog:new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
+    <h1><a href="{% url 'weblog:home' %}">Blog</a></h1>
+</div>
+
+<div class="content container">
+    <div class="row">
+        <div class="col-md-8">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
-    <ul>
-    {% for title in title_list %}
-        <li><a href="{% url 'weblog:detail' title.id %}">{{ title.title }}</a></li>
-        <p>{{ 'date published' }}</p>
-    {% endfor %}
-    </ul>
-    <form action="{% url 'weblog:post_new' title.id%}">
-    <button type="submit">Create</button>
-    </form>
+
+</div>
+
+
 </body>
+</html>

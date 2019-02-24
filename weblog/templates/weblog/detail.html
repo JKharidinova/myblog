@@ -1,2 +1,15 @@
-<h1>{{ blogs.title }}</h1>
+{% extends 'weblog/base.html' %}
 
+{% block content %}
+    <div class="post">
+        {% if post.pub_date %}
+            <div class="date">
+                {{ post.pub_date }}
+            </div>
+        {% endif %}
+        <a class="btn btn-default" href="{% url 'weblog:edit' pk=post.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.post_text|linebreaksbr }}</p>
+        <h3>Blogger: {{ post.author }}</h3>
+    </div>
+{% endblock %}
